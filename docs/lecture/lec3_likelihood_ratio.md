@@ -1,6 +1,6 @@
 # Likelihood Ratio Test and Multiple Hypothesis Testing
 
-There are 4 topics and 6 exercise.
+There are 4 topics and 6 exercises.
 
 ## 1. Likelihood Ratio Test
 

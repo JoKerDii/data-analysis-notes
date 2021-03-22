@@ -3,4 +3,5 @@
   - [Lecture 1](lecture/lec1_observational_study.md)
   - [Lecture 2](lecture/lec2_hypothesis_test.md)
   - [Lecture 3](lecture/lec3_likelihood_ratio.md)
+  - [Lecture 4](lecture/lec4_correlation.md)
 - **Project Documentation**

@@ -1,6 +1,6 @@
 # Hypothesis Testing
 
-There are 7 topics.
+There are 7 topics and 0 exercise.
 
 ## 1. Hypergeometric probability distribution
 
