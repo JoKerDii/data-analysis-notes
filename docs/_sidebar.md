@@ -4,4 +4,6 @@
   - [Lecture 2](lecture/lec2_hypothesis_test.md)
   - [Lecture 3](lecture/lec3_likelihood_ratio.md)
   - [Lecture 4](lecture/lec4_correlation.md)
+  - [Lecture 5](lecture/lec5_gradient_descent.md)
 - **Project Documentation**
+
