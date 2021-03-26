@@ -170,6 +170,127 @@ Suppose the loss function is convex and so the Hessian matrix is positive semi-d
 $$
 f(\mathrm{{\boldsymbol w}}) \geq f(\mathrm{{\boldsymbol w}}_0) + (\nabla f)(\mathrm{{\boldsymbol w}}_0) (\mathrm{{\boldsymbol w}} - \mathrm{{\boldsymbol w}}_0)
 $$
-Thus, we have found a **tangent hyperplane** that is a lower bound for the loss function in more than two dimensions. And this tangent hyperplane exists for all choices of w.
+Thus, we have found a **tangent hyperplane** that is a lower bound for the loss function in more than two dimensions. And this tangent hyperplane exists for all choices of $w$.
 
-## 3. Quadratic minimization and gradient descent
+## 3. Quadratic minimization
+
+A nicer strategy than solving $\nabla f(w) = 0$: **Approximate $f$ locally with quadratic function $g_t$, then minimize $g_t$.**
+
+#### Deriving GD: Quadratic Upper Bounds
+
+* Goal: 
+
+  * (1) $g_t(w) \geq f(w)~~\forall w$ 
+  * (2) $g(w^t) = f(w^t)$
+
+* Use **Taylor expansion** to get $g_t(w)$: in 1D
+  $$
+  \begin{aligned}
+  f(u) & = f(w^t) + f'(w^t)(u-w^t) + 1/2 f''(w^t)(u-w^t)^2 + ...\\
+  g_t(u) & = f(w^t) + f'(w^t)(u-w^t) + L/2(u-w^t)^2
+  \end{aligned}
+  $$
+
+* Choose $L$ large enough to satisfy Taylor expansion equation
+
+* Set $g_t'(u) = 0$ gives minimizer of $g$.
+  $$
+  u_t = w^t - \frac{1}{L}f'(w^t) = w^{t+1}\\
+  $$
+  or in higher dimension
+  $$
+  u_t = w^t - \frac{1}{L}\nabla f(w^t) = w^{t+1}
+  $$
+
+Note that when $f(u)$ is steep, set $L$ to be large, else when $f(u)$ is flat, set $L$ to be small. This is consistent with that when $f(u)$ is steep and $L$ is large, the update step is small, when $f(u)$ is flat and $L$ is small, the update step is large.
+
+#### Example: Least Squares Regression
+
+With update rule $w^{t+1} \leftarrow w^t - \alpha_t \nabla f(w^t)$, we now use the **gradient of squared loss**.
+$$
+\nabla_w (\sum^N_{i=1}(y_i - x_i \cdot w)^2) = \sum^N_{i=1} \nabla_w(y_i - x_i \cdot w)^2 = -2\sum^N_{i=1}(y_i - x_i \cdot w)x_i^T
+$$
+so $w^{t+1} = w^t + 2 \alpha_t\sum^N_{i=1}(y_i - x_i \cdot w)x_i^T$.
+
+Note that 
+
+* Part $(y_i - x_i \cdot w)$ is called "residual" where $x_i \cdot w$ is $\hat{y}$. The residual is positive if $y_i > \hat{y}$. 
+* If the residual is positive, adding fraction of $x_i$ to $w^T$ increases dot product $x_i \cdot w$. 
+* If the residual is negative, substract fraction of $x_i$ to $w^T$ decreases dot product $x_i \cdot w$. 
+* The update rule could minimize residuals.
+
+#### Newton's Method of Minimization
+
+Recall that the lower bound of a convex loss function 
+$$
+f(w) \geq f(w_0) + f'(w_0) (w - w_0)
+$$
+is derived from the Taylor expansion
+$$
+f(w)= f(w_0) + f'(w_0) (w - w_0) + \frac{1}{2} f^{\prime \prime }(w_0) (w - w_0)^2 + \mathcal{O}(|w-w_0|^3)
+$$
+We approximate $f(w)$ by truncating this expansion at the second order
+$$
+g_0(w)= f(w_0) + f'(w_0) (w - w_0) + \frac{1}{2} f^{\prime \prime }(w_0) (w - w_0)^2
+$$
+As $f$ is convex, $f''(w_0) \geq 0$, $g_0(w)$ has a global minimum.
+
+To find the minimum, we take the derivative with respect to $w$, set it to zero at $w = w_1$. We got
+$$
+\frac{\partial g_0}{\partial w}(w) = f'(w_0) + f^{\prime \prime }(w_0) (w - w_0) = 0\\
+w_1 = w_0 - \frac{f'(w_0)}{f^{\prime \prime }(w_0)}
+$$
+Thus $w_t$ can be iteratively determined at step $t$
+$$
+w_{t+1} = w_ t - \frac{f'(w_ t)}{f^{\prime \prime }(w_ t)}
+$$
+In higher dimensions, 
+$$
+\mathrm{{\boldsymbol w}}_ {t+1}= \mathrm{{\boldsymbol w}}_ t - \left[ (\nabla \nabla f)(\mathrm{{\boldsymbol w}}_ t) \right]^{-1} (\nabla f)(\mathrm{{\boldsymbol w}}_ t)^{\intercal }
+$$
+Note that we should be careful about $f''(w_t) = 0$. 
+
+
+
+> #### Exercise 13
+>
+> Will the multidimensional Newton's method work for any convex loss function?
+>
+> > **Answer**: No
+>
+> > **Solution**: 
+> >
+> > * Reason 1: a positive semi-definite matrix may not be invertible
+> >
+> >   The Hessian matrix for a multidimensional convex loss function is **positive semi-definite**. (Because a positive semi-definite matrix may have a zero determinant so it may not be invertible. )
+> >
+> >   If we can guarantee that the Hessian is positive definite, then we can always find the inverse Hessian, and we can always apply the multidimensional Newton's method. If the Hessian is positive definite, then the function is called **strongly** convex.
+> >
+> > * Reason 2: a multidimensional convex function might not have a minimum.
+> >
+> >   The Hessian may also have negative eigenvalues ( if it is negative semi-definite or indefinite ) in which case the quadratic approximation is no longer convex, and does not have a minimum. 
+
+A common **stop criteria**: when the norm of the gradient is below some threshold $ϵ$:
+$$
+{| | (\nabla f)(\mathrm{{\boldsymbol w}}_ t) | |}^2 < \epsilon
+$$
+Another common **stop criteria**: when the difference of loss in the last two iteration is below some threshold $\epsilon$
+$$
+f(\mathrm{{\boldsymbol w}}_{t-1}) - f(\mathrm{{\boldsymbol w}}_{t}) < \epsilon
+$$
+
+#### Gradient Descent
+
+The drawback of Newton's Method is to compute Hessian Matrix $\nabla \nabla f$, which is computationally demanding. To improve this, we can take a guess at the value of the Hessian as 
+$$
+(\nabla \nabla f) \approx \frac{1}{\alpha } {\boldsymbol I}
+$$
+where $\alpha$ is a positive real number, often called **step size**. Now the iterative update rule becomes 
+$$
+\mathrm{{\boldsymbol w}}_ {t+1}= \mathrm{{\boldsymbol w}}_ t - \alpha (\nabla f)(\mathrm{{\boldsymbol w}}_ t)^{\intercal }
+$$
+which requires knowledge of only the gradient. 
+
+Note that there is no guarantee whether gradient descent would find a minimum if there is a minimum.
+
+## 4. Step sizes and quadratic bounds
