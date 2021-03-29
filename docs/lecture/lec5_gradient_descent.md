@@ -1,6 +1,6 @@
 # Gradient Descent 
 
-There are topics and exercises.
+There are 6 topics and 5 exercises.
 
 **Tips**: Gradient descent is usually discussed in the context of optimization, where $\hat{w}$ notation is commonly used to denote the estimator for the model parameters instead of $\hat{\beta}$ commonly used in statistics. 
 
@@ -293,4 +293,218 @@ which requires knowledge of only the gradient.
 
 Note that there is no guarantee whether gradient descent would find a minimum if there is a minimum.
 
-## 4. Step sizes and quadratic bounds
+## 4. Step sizes
+
+#### Problem of large step sizes: 
+
+If the step sizes are too large, the next update $\mathrm{{\boldsymbol w}}_{t+1}$ can actually be further from the minimum than the current position $\mathrm{{\boldsymbol w}}_{t}$. For convex loss function $f(\mathrm{{\boldsymbol w}})$, the gradient increases as we get further from the minimum. The gradient descent does not converge as ${| | (\nabla f)(\mathrm{{\boldsymbol w}}_ t) | |}^2 < \epsilon$ can not be satisfied, so we can end up in a situation where ${| | (\nabla f)(\mathrm{{\boldsymbol w}}_{t+1}) | |}^2 > {| | (\nabla f)(\mathrm{{\boldsymbol w}}_{t}) | |}^2$. 
+
+#### Obtain step size
+
+##### Method 1
+
+Recall **Newton Method** gives the update rule in high dimensions:
+$$
+\mathrm{{\boldsymbol w}}_ {t+1}= \mathrm{{\boldsymbol w}}_ t - \left[ (\nabla \nabla f)(\mathrm{{\boldsymbol w}}_ t) \right]^{-1} (\nabla f)(\mathrm{{\boldsymbol w}}_ t)^{\intercal }
+$$
+The problem is that Hessian Matrix is computational demanding. And also we cannot know curvature directly from Hessian. Instead we can perform an **eigen decomposition** of the Hessian matrix, which gives us a series of eigenvalues $\lambda_i$ and associated eigenvectors $v_i$. **The eigenvectors are directions in our parameter space, and the associated eigenvalues are the measure of curvature in the direction of that eigenvector.** Thus we can find an upper bound $L$ to the curvature at point $\mathrm{{\boldsymbol w}}_ t$ by using the maximum eigenvalue:
+$$
+L = \max_i\lambda_i
+$$
+Then we can approximate the Hessian by this upper bound and find a step size
+$$
+(\nabla \nabla f)(\mathrm{{\boldsymbol w}}_ t) \approx L I = \frac{1}{\alpha } {\boldsymbol I}
+$$
+
+##### Method 2
+
+Alternative (and better since we do not need decomposition) way of obtaining maximum eigenvalue: **the maximum eigenvalue is also given by the spectral norm of the matrix. This matrix norm is defined as**
+$$
+{| |{\boldsymbol H}| |}_2= \max _{\mathrm{{\boldsymbol u}} \neq 0} \frac{\mathrm{{\boldsymbol u}}^{\intercal }{\boldsymbol H} \mathrm{{\boldsymbol u}}}{\mathrm{{\boldsymbol u}}^{\intercal }\mathrm{{\boldsymbol u}}}
+$$
+We can restrict the vectors in the maximization to unit vectors
+$$
+{| |{\boldsymbol H}| |}_2= \max _{{| |\mathrm{{\boldsymbol n}}| |}^2 = 1} \mathrm{{\boldsymbol n}}^{\intercal }{\boldsymbol H} \mathrm{{\boldsymbol n}}
+$$
+To find the spectral norm, we find the unit vector $n$ that maximizes the term $\mathrm{{\boldsymbol n}}^{\intercal }{\boldsymbol H} \mathrm{{\boldsymbol n}}$. In other words, we find a direction which the Hessian-vector product ${\boldsymbol H}\mathrm{{\boldsymbol n}}$ maximizes. As Hessian is symmetric, the spectral norm of it equals to the maximum eigenvalue
+$$
+{| |{\boldsymbol H}| |}_2 = \max_i \lambda_i
+$$
+
+#### Solution is to use smaller step size to slower progress overall.
+
+With step size $\alpha_t = 1/L$ , we find a quadratic upper bound 
+$$
+f(\mathrm{{\boldsymbol w}}) \leq f(\mathrm{{\boldsymbol w}}_ t) + (\nabla f)(\mathrm{{\boldsymbol w}}_ t) (\mathrm{{\boldsymbol w}} - \mathrm{{\boldsymbol w}}_ t) + \frac{1}{2} \frac{1}{\alpha _ t} {| | \mathrm{{\boldsymbol w}} - \mathrm{{\boldsymbol w}}_ t | |}^2
+$$
+If we don't know $L$, **tuning** or **backtracking** to find optimal $\alpha$.
+
+* In each step $t$: 
+  
+  Select optimistic $\alpha_t$, compute the new update rule
+  $$
+  \mathrm{{\boldsymbol w}}_ {t+1}= \mathrm{{\boldsymbol w}}_ t - \alpha _ t (\nabla f)(\mathrm{{\boldsymbol w}}_ t)^{\intercal }
+  $$
+  Update and check if 
+  $$
+  \begin{aligned}
+  f(\mathrm{{\boldsymbol w}}_{t+1}) & \leq  f(\mathrm{{\boldsymbol w}}_ t) + (\nabla f)(\mathrm{{\boldsymbol w}}_ t) \alpha _ t \left(-(\nabla f)(\mathrm{{\boldsymbol w}}_ t)^{\intercal }\right) + \frac{1}{2} \frac{1}{\alpha _ t} {| | \alpha _ t (\nabla f)(\mathrm{{\boldsymbol w}}_ t)^{\intercal }| |}^2\\
+  & = f(\mathrm{{\boldsymbol w}}_ t) - \alpha _ t {| | (\nabla f)(\mathrm{{\boldsymbol w}}_ t) | |}^2 + \frac{1}{2} \alpha _ t {| | (\nabla f)(\mathrm{{\boldsymbol w}}_ t)^{\intercal }| |}^2\\
+  & = f(\mathrm{{\boldsymbol w}}_ t) - \frac{1}{2} \alpha _ t {| | (\nabla f)(\mathrm{{\boldsymbol w}}_ t) | |}^2
+  \end{aligned}
+  $$
+  If yes, use $\alpha_t$ if no: $\alpha_t = \alpha_t/2$ and check again.
+
+#### Determine numbers of iterations
+
+In practice,
+
+* Until $\|\nabla f(w)\|$ is small enough
+* Until the change in loss $f(w^t) - f(w^{t+1})$ is small enough
+
+In theory, $f(w^t) - f(w^*) \leq ...$ (gap to optimum)
+
+* **convex functions with bounded $L$ (gradients):**
+  $$
+  f(w^t) - f(w^*) \leq \frac{L\|w^0 - w^*\|^2}{2t}
+  $$
+  (need $O(1/\epsilon)$ iterations for $f(w^t) - f(w^*) \leq \epsilon$)
+
+* **m-strongly convex functions**
+  $$
+  f(w^t) - f(w^*) \leq (1- \frac{m}{L})^t(f(w^0) - f(w^*))
+  $$
+  (need $O(\text{log}(1/\epsilon))$ iterations for $f(w^t) - f(w^*) \leq \epsilon$)
+
+> #### Exercise 14
+>
+> Is It proper to compute the diagonals of the Hessian, and take the maximum as an upper bound on the curvature?
+> $$
+> L = \max _{i} \frac{\partial ^2 f}{\partial w_ i^2}(\mathrm{{\boldsymbol w}}_ t)
+> $$
+>
+> > **Answer**: No
+>
+> > **Solution**: The diagonals can only tell us the curvature in the orthogonal directions at most. In some cases, the diagonals tell nothing about Hessian. In many automatic differentiation libraries, computing the diagonals of the Hessian has the same computational complexity as computing the full Hessian.
+
+## 5. Quadratic Bounds
+
+Recall the Taylor expansion and the remainder term:
+$$
+f(\mathrm{{\boldsymbol w}})= f(\mathrm{{\boldsymbol w}}_ t) + (\nabla f)(\mathrm{{\boldsymbol w}}_ t) (\mathrm{{\boldsymbol w}} - \mathrm{{\boldsymbol w}}_ t) + R_1(\mathrm{{\boldsymbol w}};\mathrm{{\boldsymbol w}}_ t)\\
+R_1(\mathrm{{\boldsymbol w}};\mathrm{{\boldsymbol w}}_ t) = \frac{1}{2} (\mathrm{{\boldsymbol w}} - \mathrm{{\boldsymbol w}}_ t)^{\intercal }(\nabla \nabla f)(\mathrm{{\boldsymbol w}}_{*}) (\mathrm{{\boldsymbol w}} - \mathrm{{\boldsymbol w}}_ t)
+$$
+
+* To find **Quadratic Upper Bound**:
+
+  An upper bound on the spectral norm of the Hessian
+  $$
+  {| |{\boldsymbol H}(w)| |}_2 \leq M \quad \quad \forall \mathrm{{\boldsymbol w}} \in \mathcal{R}
+  $$
+  So the upper bound on the remainder term
+  $$
+  R_1(\mathrm{{\boldsymbol w}};\mathrm{{\boldsymbol w}}_ t) \leq \frac{1}{2} M {| | \mathrm{{\boldsymbol w}} - \mathrm{{\boldsymbol w}}_ t | |}^2
+  $$
+  So the quadratic upper bound on the loss function
+  $$
+  f(\mathrm{{\boldsymbol w}}) \leq f(\mathrm{{\boldsymbol w}}_ t) + (\nabla f)(\mathrm{{\boldsymbol w}}_ t) (\mathrm{{\boldsymbol w}} - \mathrm{{\boldsymbol w}}_ t) + \frac{1}{2} M {| | \mathrm{{\boldsymbol w}} - \mathrm{{\boldsymbol w}}_ t | |}^2
+  $$
+  Then we can use a step size $\alpha = 1/M$. Usually, we only need to find a $L$ that $L \geq M$ for step size $\alpha = 1/L$.
+
+* To find **Quadratic Lower Bound** (optional, not useful):
+
+  We can define a lower bound if we know the minimal eigenvalue of the Hessian
+  $$
+  m \leq \left( \min _{i} \lambda _ i(\mathrm{{\boldsymbol w}}) \right) \quad \quad \forall \mathrm{{\boldsymbol w}}
+  $$
+  So the lower bound on the remainder term:
+  $$
+  R_1(\mathrm{{\boldsymbol w}};\mathrm{{\boldsymbol w}}_ t) \geq \frac{1}{2} m {| | \mathrm{{\boldsymbol w}} - \mathrm{{\boldsymbol w}}_ t | |}^2
+  $$
+  So the quadratic lower bound on the loss function
+  $$
+  f(\mathrm{{\boldsymbol w}}) \geq f(\mathrm{{\boldsymbol w}}_ t) + (\nabla f)(\mathrm{{\boldsymbol w}}_ t) (\mathrm{{\boldsymbol w}} - \mathrm{{\boldsymbol w}}_ t) + \frac{1}{2} m {| | \mathrm{{\boldsymbol w}} - \mathrm{{\boldsymbol w}}_ t | |}^2
+  $$
+
+## 6. Stochastic gradient descent
+
+**Idea** of SGD: estimate sum via few (one) term(s)
+
+Brief **algorithm**:
+
+1. start with some $w^0$.
+
+ 2. for $t = 0,1,2,3,...$
+
+    draw (data point) $i$ **uniformly at random**, $1 \leq i \leq N$
+
+$$
+w^{t+1} \leftarrow w^t - \alpha_t \nabla f_i(w^t)
+$$
+Note that as long as we choose $f_i$ uniformly from the data set, this estimator is **unbiased**
+$$
+\begin{aligned}
+\mathbb {E}[\hat{\mathrm{{\boldsymbol w}}}_{t+1}] &= \mathrm{{\boldsymbol w}}_ t - \alpha _ t \mathbb {E}[ (\nabla f_ i)(\mathrm{{\boldsymbol w}}_ t) ]\\
+&= \mathrm{{\boldsymbol w}}_ t - \alpha _ t (\nabla f)(\mathrm{{\boldsymbol w}}_ t)\\
+&= \mathrm{{\boldsymbol w}}_{t+1}
+\end{aligned}
+$$
+In order to ensure that we use all available data, we should choose the maximum number of iterations to be several times larger than the data set. There are also variations called "**batch SGD**" on this scheme where the data point used at each step is selected sequentially an array of data points. In that case, the update rule would be 
+$$
+\hat{\mathrm{{\boldsymbol w}}}_{t+1}= \mathrm{{\boldsymbol w}}_ t - \alpha _ t (\nabla f_{t\text { mod }N})(\mathrm{{\boldsymbol w}}_ t)
+$$
+Difference of GD and SGD: 
+
+* GD: the loss curve is smooth; GD sees all the data points in one iteration; converge slower.
+* SGD: the loss curve is erratic; SGD sees only few data points in one iteration; converge more quickly.
+
+#### SGD variance
+
+The variance of this estimator can be quite large. Two ways to control the variance:
+
+1. **Control the step size**. By reducing the step size, we reduce the variance in the estimator.
+
+2. **Modify the estimator**. To compute an average over a small sample $\mathcal{S}$ of size $|\mathcal{S}| = k$.
+   $$
+   \tilde{\mathrm{{\boldsymbol w}}}_{t+1}= \tilde{\mathrm{{\boldsymbol w}}}_ t - \alpha _ t \frac{1}{k} \sum _{i \in \mathcal{S}} (\nabla f_ i)(\mathrm{{\boldsymbol w}}_ t)
+   $$
+   where the sample is drawn uniformly from the population without replacement. Now the variance will be
+   $$
+   \textrm{Var}\left( \tilde{\mathrm{{\boldsymbol w}}}_{t+1} \right)\approx \frac{\alpha _ t^2}{k} \textrm{Var}\left( (\nabla f_ i)(\mathrm{{\boldsymbol w}}_ t) \right)
+   $$
+   So by increasing the size of the sample, we decrease the variance of the estimator as well. This is known as **mini-batch stochastic gradient descent**.
+
+> #### Exercise 15
+>
+> What happens to the variance if we choose the mini-batch to be the same size as the data set $(k = N)$?
+>
+> > **Answer**: $\textrm{Var}\left( \tilde{\mathrm{{\boldsymbol w}}}_ t \right) = 0$
+>
+> > **Solution**: 
+> >
+> > The stochastic gradient descent estimator is unbiased
+> > $$
+> > \mathbb {E}[\hat{\mathrm{{\boldsymbol w}}}_ t] = \mathrm{{\boldsymbol w}}_ t
+> > $$
+> > The variance is defined as
+> > $$
+> > \textrm{Var}\left( \hat{\mathrm{{\boldsymbol w}}}_ t \right)  = \mathbb {E}[(\hat{\mathrm{{\boldsymbol w}}}_ t - \mathrm{{\boldsymbol w}}_ t)(\hat{\mathrm{{\boldsymbol w}}}_ t - \mathrm{{\boldsymbol w}}_ t)^{\intercal }]
+> > $$
+> > When $k = N$, the mini-batch gradient is just the same as the total gradient, and so we get $\hat{\mathrm{{\boldsymbol w}}}_ t = \mathrm{{\boldsymbol w}}_ t$ and so the variance is zero.
+> >
+> > Intuition: when the mini-batch is the same size as the data set, the update rule is no longer stochastic, as **there is only one way to select the mini-batch** (the entire data set). Therefore, there is no longer any variance in the gradients computed.
+
+#### Step size schedule
+
+When we are far from the true minimum, the gradients for each $f_i$ - which generally points towards $\mathrm{{\boldsymbol w}}_ i^{*}$ - will tend to point in the same direction. But once we are close to the minimum, the individual data point minimums $\mathrm{{\boldsymbol w}}_ i^{*}$ will be scattered all around us, and so the gradients will tend to point in all different directions. 
+
+Considering this pattern, we could schedule the step size by creating an $\alpha_t$ as a function of the step number $t$, so that the step size starts out large and then be reduced as we converge toward the minimum. e.g.
+$$
+\alpha_i = \frac{1}{1+t}
+$$
+
+
+
+
+
+
