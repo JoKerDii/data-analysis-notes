@@ -1,9 +1,12 @@
 - Data Analysis
   - [Overview](basics/overview.md)
-  - [Lecture 1](lecture/lec1_observational_study.md)
-  - [Lecture 2](lecture/lec2_hypothesis_test.md)
-  - [Lecture 3](lecture/lec3_likelihood_ratio.md)
-  - [Lecture 4](lecture/lec4_correlation.md)
-  - [Lecture 5](lecture/lec5_gradient_descent.md)
+- Statistics Review
+  - [Lecture 1](review/lec1_observational_study.md)
+  - [Lecture 2](review/lec2_hypothesis_test.md)
+  - [Lecture 3](review/lec3_likelihood_ratio.md)
+  - [Lecture 4](review/lec4_correlation.md)
+  - [Lecture 5](review/lec5_gradient_descent.md)
+- Genomics and High-Dimensional Data
+  - [Lecture 6](genome/lec6_visualization.md)
 - **Project Documentation**
 
