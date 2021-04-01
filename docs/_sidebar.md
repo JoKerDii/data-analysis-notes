@@ -7,6 +7,7 @@
   - [Lecture 4](review/lec4_correlation.md)
   - [Lecture 5](review/lec5_gradient_descent.md)
 - Genomics and High-Dimensional Data
-  - [Lecture 6](genome/lec6_visualization.md)
+  - [Lecture 6](genome/lec6_preparations.md)
+  - [Lecture 7](genome/lec7_pca.md)
 - **Project Documentation**
 
