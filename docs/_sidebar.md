@@ -9,5 +9,6 @@
 - Genomics and High-Dimensional Data
   - [Lecture 6](genome/lec6_preparations.md)
   - [Lecture 7](genome/lec7_pca.md)
+  - [Lecture 8](genome/lec8_mds.md)
 - **Project Documentation**
 

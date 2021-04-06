@@ -311,3 +311,45 @@ Some notes for review. There are 4 topics.
    Note that most positive semidefinite matrices are not orthogonal, and most orthogonal matrices are not positive semidefinite. 
 
    Also note that in **PCA**, the general strategy is to **diagonalize** the (empirical covariance) matrix and select the eigenvectors whose eigenvalues are the largest as axes on which to visualize our data set or point cloud.
+
+## 5. Covariance vs. Correlation
+
+The correlation $\rho _{X,Y}$ of two random variables $X$ and $Y$ is the covariance of the rescaled random variables $\frac{X}{\sigma_X}$ and $\frac{Y}{\sigma_Y}$
+$$
+\rho_{X,Y} =\textsf{Cov}\left(\frac{X}{\sigma _ X},\frac{Y}{\sigma _ Y}\right)=\frac{\textsf{Cov}(X,Y)}{\sigma _ X \sigma _ Y} = \frac{\mathbf E[XY]-\mathbf E[X]\mathbf E[Y]}{\sqrt{\left(\mathbf E[X^2]-(\mathbf E[X])^2\right)\left(\mathbf E[Y^2]-(\mathbf E[Y])^2\right)}}
+$$
+If $\mathbf E[X]=\mathbf E[Y]=0$, then
+$$
+\rho_{X,Y}=\frac{\mathbf E[XY]}{\sqrt{\mathbf E[X^2]\mathbf E[Y^2]}}
+$$
+Extending to random vectors $\mathbf{X}$ with $\mathbf E[\mathbf{X}]=\mathbf{0}$, the correlation matrix is the covariance matrix of rescaled data $\, \tilde{\mathbf{X}}^ T=\begin{pmatrix} X_1/\sigma _1& X_2/\sigma _2& \cdots & X_ n/\sigma _ n \end{pmatrix}^ T$:
+$$
+\mathbf E\left[\tilde{\mathbf{X}} \tilde{\mathbf{X}}^ T\right]= \mathbf E\left[\begin{pmatrix} X_1/\sigma _1\\ X_2/\sigma _2\\ \vdots \\ X_ n/\sigma _ n \end{pmatrix}\begin{pmatrix} X_1/\sigma _1& X_2/\sigma _2& \cdots & X_ n/\sigma _ n \end{pmatrix}\right]
+$$
+so that $i,j$-th entry of the correlation matrix is $\mathbf E\left[\frac{\mathbf{X}_ i}{\sigma _ i}\frac{\mathbf{X}_ j}{\sigma _ j}\right]$.
+
+By definition, covariance has the dimension of squared of the data $x^2$, while correlation is dimensionless. Hence, when covariates have different dimensions or units, it makes more sense to **first rescale each covariate by its sample standard deviation**, before determining the directions of largest spread using PCA.
+
+## 6. Total Variance
+
+We can decide how many PCs to retain in the projection of the data based on their explained variance. 
+
+The **total variance** is the **sum of variance of all the PCs**, which equals the **sum of the eigenvalues of the covariance matrix**:
+$$
+\text {Total Variance}= \sum _{j=1}^{p} \lambda _ j
+$$
+The fraction of variance explained by a PC is the **ratio of the variance of that PC to the total variance**:
+$$
+\text{Explained Variance} = \frac{\lambda _ i}{\sum _{j=1}^{p} \lambda _ j}
+$$
+
+* Compare the explained variance of the first principal component when PCA is applied to the correlation matrix with when PCA is applied to the covariance matrix: 
+  * Intuitively, considers the case in which the components $X_i$ are independent but have extremely different variances, the covariance matrix should be (nearly) diagonal with the variances of each component on the main diagonal. The sample correlation matrix will (nearly) be the identity.
+  * In the unscaled case, suppose the variance of the first component is 100 and the variance of the second component is 1, then the first component "explains" 99% of the variance. After scaling, each component explains 1/2 of the variance -- it seems very intuitive each of two independent components contributes 1/2 of the total variance.
+
+
+
+
+
+
+
