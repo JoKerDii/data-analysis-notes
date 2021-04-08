@@ -10,5 +10,6 @@
   - [Lecture 6](genome/lec6_preparations.md)
   - [Lecture 7](genome/lec7_pca.md)
   - [Lecture 8](genome/lec8_mds.md)
+  - [Lecture 9](genome/lec9_tne.md)
 - **Project Documentation**
 
