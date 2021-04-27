@@ -230,9 +230,15 @@ Because $\mathbf{w}$ is a unit vector, the quantity above is maximized when most
 > > \frac{1}{\sqrt{5}}\begin{pmatrix}  2& 1\\ -1& 2\end{pmatrix}\begin{pmatrix} 1\\ 1/2\end{pmatrix} = \begin{pmatrix}  \frac{\sqrt{5}}{2} \\ 0 \end{pmatrix}.
 > > $$
 
+---
 
 
 
+Note that in practice, there are several ways help to decide the number of clusters
+
+* Scree/ Elbow plot: plot explained variance (%) versus the number of PCs
+* Cumulative variance explained threshold: plot cumulative explained variance (%) versus the number of PCs
+* Cross validation by setting the number of PCs as a hyperparameter
 
 
 

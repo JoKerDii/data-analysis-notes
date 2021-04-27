@@ -10,6 +10,9 @@
   - [Lecture 6](genome/lec6_preparations.md)
   - [Lecture 7](genome/lec7_pca.md)
   - [Lecture 8](genome/lec8_mds.md)
-  - [Lecture 9](genome/lec9_tne.md)
+  - [Lecture 9](genome/lec9_sne.md)
+  - [Lecture 10](genome/lec10_bayes.md)
+  - [Lecture 11](genome/lec11_logit.md)
+  - [Lecture 12](genome/lec12_clustering.md)
 - **Project Documentation**
 

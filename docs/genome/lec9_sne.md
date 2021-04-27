@@ -1,8 +1,8 @@
 # Stochastic neighbor embedding (SNE) 
 
-There are topics and exercises.
+There are 5 topics and 1 exercise.
 
-## Key Ideas 
+## 1. Key Ideas 
 
 * Probabilistic approach to place objects from high-dimensional space into low-dimensional space so as to preserve the identity of neighbors.
 * Center a Gaussian on each object in high-dimensional space
@@ -10,7 +10,7 @@ There are topics and exercises.
 * Determine low-dimensional distribution by minimizing Kullback-Leibler (KL) divergence.
 * SNE is a non-convex optimization problem and it is optimized using gradient descent from an initial configuration. There are many local optima and it does depend on the initialization.
 
-## (Symmetric) SNE
+## 2. (Symmetric) SNE
 
 * In **high dimensional space**, given dissimilarity / distance matrix $D_{ij}$ of data in a $p$-dimensional space
   $$
@@ -46,17 +46,19 @@ There are topics and exercises.
 
 Note that in the definition of the distributions $\mathbf{P}$ and $\mathbf{Q}$, we have used **Gaussian** distributions with the **same variance** at each data point which simplified the definition of $p_{ij}$ and $q_{ij}$. Practical algorithms are more sophisticated: they use Gaussian distributions with different variances $\sigma_i^2$ at different data points, and then symmetrize between points $i$ and $j$ to get the PMF $p_{ij}$, which is known as t-SNE.
 
-## tSNE
+## 3. t-distributed stochastic neighbor embedding (t-SNE) 
 
 * Problem of SNE: sometimes crowding points that should be far away because there is much less space in the low dimensional space. So medium-distance points might actually become closeby points.
 
-* t-SNE reduces this by using t-distribution with 1 degree of freedom for $y$'s.
+* t-SNE reduces this by using **t-distribution with 1 degree of freedom** to define the probability distribution of neighbors in the low-dimensional target space (for $y$'s).
   $$
-  q_{ij} = \frac{(1 + \|y_i - y_j\|^2_2)^{-1}}{\sum_{k \neq l}(1 + \|y_k - y_l\|^2_2)^{-1}}
+  q_{ij}=\frac{1/\left(1+\lVert \mathbf{y}^{(i)} - \mathbf{y}^{(j)} \rVert ^2\right)}{\sum _{k \ne l}1/\left(1+\lVert \mathbf{y}^{(k)} - \mathbf{y}^{(l)} \rVert ^2\right)}
   $$
-  Compared to Gaussian distribution, t-distribution has fatter tails. This property allows moving points that are at a medium distance even farther away does not matter anymore (probabilities are the same).
+  Compared to Gaussian distribution (yellow), t-distribution (blue) has **heavy / fatter tails**. This property allows moving points that are at a medium distance even farther away does not matter anymore (probabilities are the same). In other words, it reduces the phenomenon of "data points crowding in the middle".
+  
+  ![t_vs_normal_dist](../assets/images/t_v_normal_distribution.png)
 
-## KL-Divergence (Recap)
+## 4. KL-Divergence (Recap)
 
 Let $\mathbf{P}$ and $\mathbf{Q}$ be discrete probability distributions with common sample space and with PMFs $p$ and $q$ respectively. Then the **KL-divergence** (also known as **relative entropy** ) of $\mathbf{P}$ from $\mathbf{Q}$ is defined as
 $$
@@ -71,6 +73,16 @@ Two different properties from distances:
 
 * Asymmetry: $\text {KL}(\mathbf{P}, \mathbf{Q})\neq \text {KL}(\mathbf{Q}, \mathbf{P})$.
 * No triangle inequality: $\text {KL}(\mathbf{P}, \mathbf{Q})\nleq \text {KL}(\mathbf{P}, \mathbf r)+\text {KL}(\mathbf r, \mathbf{Q})$.
+
+
+Generalize the configuration to $p$ dimensions so that there is 1 central node and $p$ boundary nodes, with boundary nodes all at distance $A$ from the center node and a larger distance $B(B > A)$ from each other. The term in the KL-Divergence $KL(\mathbf{P} || \mathbf{Q})$ can be separated into two groups, those that involve the central node $\mathbf{x}^{(1)}$ and a boundary node, and those that involve two boundary nodes.
+$$
+\begin{aligned}
+\text {KL}(\mathbf{P}||\mathbf{Q}) &= \sum _{i< j} p_{ij}\log \frac{p_{ij}}{q_{ij}}\\
+ &=\sum _{j=1}^{p} p_{{\color{blue}{1}} j}\log \frac{p_{{\color{blue}{1}} j}}{q_{{\color{blue}{1}} j}}+ \sum _{i\neq 1} \sum _{j} \mathbf{P}_{ij}\log \frac{p_{ij}}{q_{ij}}
+ \end{aligned}
+$$
+If the dimension $p$ becomes large, there are many more terms in the second group, then when minimizing the KL-divergence, it becomes more important to choose large $q_{ij}$ so that $p_{ij}<q_{ij}$. This means **shortening the distance between the boundary nodes in the low-dimensional target space** is weighted more heavily, and the boundary nodes are crowded together in the target space.
 
 > #### Exercise 19
 >
@@ -107,8 +119,8 @@ Two different properties from distances:
 > > $$
 > > \begin{aligned}
 > > \text{} p_{12}&=q_{12}\\
-> >  \frac{x}{\epsilon +2x} &= \frac{y}{\delta + 2y}\\
-> >  \frac{\delta}{y} &= \frac{\epsilon}{x}\\
+> > \frac{x}{\epsilon +2x} &= \frac{y}{\delta + 2y}\\
+> > \frac{\delta}{y} &= \frac{\epsilon}{x}\\
 > > \end{aligned}
 > > $$
 > > For SNE, $\delta =\exp (-(2a)^2)=y^4$. Plugging in $\delta$ gives
@@ -120,12 +132,34 @@ Two different properties from distances:
 > > \end{aligned}
 > > $$
 > > Given $A = 1, B = \sqrt{2}$, we get $a = 1/\sqrt{3} \approx 0.577$.
+>
+> Now compute the t-SNE output for the triangle problem, find the $q_{ij}$ in terms of distance $a$ and find $a$ such that $q_{12} = p_{12}$, giving $\text {KL}(\mathbf{P}||\mathbf{Q})=0$.
+>
+> > **Answer**: $a = \sqrt{\frac{e-1}{4-e}}$
+>
+> > **Solution**: 
+> >
+> > For t-SNE, the relationship $\frac{\delta}{y}=\frac{\epsilon}{x}$ still holds but $y$ and $\delta$ use t-distribution of degree 1. Hence
+> > $$
+> > \begin{aligned}
+> > \frac{\delta}{y} &= \frac{\epsilon}{x}\\
+> > \frac{1/(1+(2a)^2)}{1/(1+a^2)} &= \frac{\epsilon}{x}\\
+> > a^2 &= \frac{1-\epsilon/x}{4 \epsilon/x-1}
+> > \end{aligned}
+> > $$
+> > Substitute $\epsilon/x = \exp\{-(B^2 - A^2)\}$, which equal $1/\epsilon$ for $A = 1$ and $B = \sqrt{2}$.
+> > $$
+> > \begin{aligned}
+> > a^2 &= \frac{1-1/e}{4/e-1}\approx 1.34\\
+> > a &= 0.1578
+> > \end{aligned}
+> > $$
 
-Generalize the configuration to $p$ dimensions so that there is 1 central node and $p$ boundary nodes, with boundary nodes all at distance $A$ from the center node and a larger distance $B(B > A)$ from each other. The term in the KL-Divergence $KL(\mathbf{P} || \mathbf{Q})$ can be separated into two groups, those that involve the central node $\mathbf{x}^{(1)}$ and a boundary node, and those that involve two boundary nodes.
-$$
-\begin{aligned}
-\text {KL}(\mathbf{P}||\mathbf{Q}) &= \sum _{i< j} p_{ij}\log \frac{p_{ij}}{q_{ij}}\\
- &=\sum _{j=1}^{p} p_{{\color{blue}{1}} j}\log \frac{p_{{\color{blue}{1}} j}}{q_{{\color{blue}{1}} j}}+ \sum _{i\neq 1} \sum _{j} \mathbf{P}_{ij}\log \frac{p_{ij}}{q_{ij}}
- \end{aligned}
-$$
-If the dimension $p$ becomes large, there are many more terms in the second group, then when minimizing the KL-divergence, it becomes more important to choose large $q_{ij}$ so that $p_{ij}<q_{ij}$. This means **shortening the distance between the boundary nodes in the low-dimensional target space** is weighted more heavily, and the boundary nodes are crowded together in the target space.
+Note that the above exercise demonstrates that after projecting data points from original 2-D space to 1-D space, the values of $a$ and $2a$ are smaller and closer together for Gaussian distribution and larger and more spread out for the t-distribution.
+
+![t_vs_normal_dist](../assets/images/t_v_normal_distribution1.png)
+
+## 5. Comments about t-SNE clustering results
+
+* t-SNE seems to find meaningful clusters, but this is the results of a non-convex optimization problem, which depends immensely on the starting configuration.
+* Axes of t-SNE have No meaning.
