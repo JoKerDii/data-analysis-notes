@@ -14,5 +14,8 @@
   - [Lecture 10](genome/lec10_bayes.md)
   - [Lecture 11](genome/lec11_logit.md)
   - [Lecture 12](genome/lec12_clustering.md)
+- Network
+  - [Lecture 13](network/lec13_intro.md)
+  - Lecture 14
 - **Project Documentation**
 
