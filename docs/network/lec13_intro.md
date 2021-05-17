@@ -171,8 +171,6 @@ Quantitative measures to make sense of a network
   C = \frac{\#  \text { of triangles at node }i}{\#  \text { of connected triples centered at node }i} = \frac{\sum _{j,k} A_{ij}A_{jk}A_{ki}}{k_ i (k_ i - 1)}
   $$
 
-* 
-
 > #### Exercise 28
 >
 > A *complete graph* is an undirected graph on n nodes such that every node is connected to every other node. Say you remove an edge from a complete graph on $n$ nodes. What is the new clustering coefficient? Assume that $n≥3$.

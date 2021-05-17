@@ -16,6 +16,7 @@
   - [Lecture 12](genome/lec12_clustering.md)
 - Network
   - [Lecture 13](network/lec13_intro.md)
-  - Lecture 14
+  - [Lecture 14](network/lec14_centrality.md)
+  - [Lecture 15](network/lec15_model.md)
 - **Project Documentation**
 
