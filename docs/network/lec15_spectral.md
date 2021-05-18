@@ -1,6 +1,6 @@
 # Spectral Clustering
 
-There are topics.
+There are 4 topics.
 
 ## 1. Co-offending networks
 
@@ -12,8 +12,6 @@ There are topics.
   $$
   \begin{bmatrix} 0 & A \\ A^T & 0\end{bmatrix}
   $$
-
-* 
 
 **Caviar network**: Drug trafficking network investigated over time. New criminals were added to the network by wire-tapping phones. Unique opportunity to analyze how a network reorganizes itself when subjected to stress.
 
