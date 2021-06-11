@@ -1,6 +1,6 @@
 # Graphical Models
 
-There are topics.
+There are 5 topics.
 
 ## 1. Erdos-Renyi model
 
@@ -43,5 +43,59 @@ $G(n,p)$, where each edge between the $n$ nodes is formed with probability $p \i
     $$
     which is small and sparse, but in reality the coefficient is usually quite larger.
 
-  
 
+## 2. Configuration model
+
+**Configuration model** generates random networks with a **given degree distribution** (e.g. power law), and addresses unrealistic degree distribution of Erdos-Renyi graphs.
+
+* Specify degree sequence ($k_1, ..., k_n$) and attach $k_i$ stubs to node $i$.
+* Choose 2 stubs at random and create edge connecting them and continue process with remaining stubs.
+* Drawbacks
+  * it's possible to have self-loops and multi-edges
+  * clustering coefficient is of order of $1/n$ which is too small.
+
+## 3. Preferential attachment model
+
+**Preferential attachment model** is a **generative network model**. It explores hypothesized generative mechanisms to see what structures they produce.
+
+* In context of bibliographic network: newly appearing paper cites previous ones with probability proportional to their number of citations. Give every paper $\beta$ citations for free.
+
+* This model has **power law degree distribution**: $p_k \sim k^{-\alpha},$ where $\alpha = 1 + \frac{\beta}{c}$.
+
+* Drawbacks
+  * leads to acyclic network
+  * small clustering coefficient
+
+## 4. Small-world model
+
+Generate **circulant graph**, where every node around a cycle is connected to its $c$ closest neighbors.
+
+* Drawback: Diameter is of order $n$, no power law degree distribution.
+
+**Small-world model**
+
+* rewire edges at random with probability $p$
+* leads to networks with high clustering coefficient and small diameter
+* Drawback: degree distribution does not follow power law
+
+## 5. Summary
+
+Features of those models: 
+
+* Erdos-Renyi model
+
+  Realistic diameter, but small clustering coefficient and binomial degree distribution.
+
+* Configuration model
+
+  Power law degree distribution, realistic diameter, but small clustering coefficient.
+
+* Preferential attachment model
+
+  Generative model with power law degree distribution, realistic diameter, but small clustering coefficient.
+
+* Small-world model
+
+  Generative model with high clustering coefficient, realistic diameter, but no power law degree distribution.
+
+We want to have a power law degree distribution, a high clustering coefficient, and a small diameter in these networks. But none of these models that satisfy all those properties. To have all three properties, we may want to combine them in some nice ways.

@@ -19,5 +19,3 @@
   - [Lecture 14](network/lec14_centrality.md)
   - [Lecture 15](network/lec15_spectral.md)
   - [Lecture 16](network/lec16_models.md)
-- **Project Documentation**
-
